@@ -1,4 +1,5 @@
 
+import yaml
 from pathlib import Path
 
 def main():
@@ -27,10 +28,10 @@ def main():
         # if not, will skip I guess?
         bundle = {
             "name": "",
-            "characteristic": "",
+            "characteristic": "Standard",
             "difficulty": 0,
             "is_official": False,
-            "levelid": ""
+            "levelid": "13e9"
         }
         # 1 - check if it is a (Built In) song
         #TODO: edge case of song names that contain '-'s (can they contain a - ?)
@@ -42,14 +43,14 @@ def main():
         dir_name = str(cur_dir)
         assert type(dir_name) == str, "if this is not string in your version, need to set it (uncomment previous line)"
         
-        if "(Built In)" in dir_name:
+        if "(Built in)" in dir_name:
             #TODO: custom / edge case levelids being different than song names (could hardcode?)
             # do logic here to get song name
             # special ids will need to be processed separately or gathered from elsewhere
             print(f"Processing Built In song: {dir_name}")
             full = dir_name.split("(")[0]
-            song_name = full.partition(" - ")[2]
-            song_id = song_name.strip()
+            song_name = full.partition(" - ")[2].strip()
+            song_id = song_name.replace(" ", "")
             print(f"Song name: {song_name}")
             print(f"Song id: {song_id}")
 
@@ -91,8 +92,15 @@ def main():
 
         # we reformat the bundle here and then "ship" it off to the file 
         # so it is saved even if this script breaks half way through running
+        yaml_str = reformat_dict_bundle(bundle)
 
-        breakpoint()
+        # with open "a" (append mode) will create a new file if it doesn't exist, 
+        # and if it exists, add new content without deleting anything
+        # need to ensure dict is properly formatted I guess
+        with open("archipelago_beat_saber_songs.yaml", "a", encoding='utf-8') as outf:
+            outf.write(yaml_str)
+
+        #breakpoint()
 
             
 
@@ -106,6 +114,10 @@ def main():
 
 
 def reformat_dict_bundle(bundle):
+    """
+    Input: dict
+    Output: str formatted correctly as block style yaml
+    """
     good_dict = {
         bundle["name"]: {
             "characteristic": bundle["characteristic"],
@@ -114,7 +126,13 @@ def reformat_dict_bundle(bundle):
             "levelid": bundle["levelid"]
         }
     }
-    return good_dict
+    # add default_style=None to get rid of strings around levelids? not working..
+    # currently was outputting any solely numeric ones with '' around them
+    # alphanumeric levelids did not have ''
+    # might be better to treat as hex or something else? 
+    # or maybe it will still work regardless of quotes (one can hope)
+    good_yaml_str = yaml.dump(good_dict, allow_unicode=True)
+    return good_yaml_str
 
 
 if __name__ == "__main__":
