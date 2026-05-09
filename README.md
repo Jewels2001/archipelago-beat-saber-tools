@@ -35,6 +35,7 @@ This involves:
     b) installing PyYaml so we can output in the correct format `pip install pyyaml`
     c) opening Terminal and running `python song_scraper.py` 
 - **copy output into your archipelago options/player yaml under `songs`**
+    Make sure the indentation/whitespace is correct, otherwise it won't work!
 - **make sure to have chosen one of the `preset` gamemodes in the yaml**
     (set the preset one you want to 50 and ensure the others are 0)
 - **as of may 9, 2026, ensure you are using apworld v0.0.5 (there are issues with preset gamemodes in v0.1.0)**
